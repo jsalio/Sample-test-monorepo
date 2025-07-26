@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "types": ["bun-types"],
+    "paths": {
+      "@app-monorepo/core": ["packages/core/src/index.ts"],
+      "@app-monorepo/unit-tests": ["packages/unit-tests/src/index.ts"],
+      "@app-monorepo/api": ["packages/api/src/index.ts"],
+      "@app-monorepo/db": ["packages/db/src/index.ts"],
+      "@app-monorepo/integration-tests": ["packages/integration-tests/src/index.ts"],
+    }
+  },
+  "include": ["packages/**/*"],
+  "exclude": ["node_modules"]
+}

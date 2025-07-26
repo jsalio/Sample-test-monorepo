@@ -1,0 +1,11 @@
+.env
+*/node_modules/*
+.DS_Store
+/dist
+/build
+/.cache
+/.vscode
+/.idea
+/.history
+*.db
+un

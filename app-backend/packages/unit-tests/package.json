@@ -1,0 +1,8 @@
+{
+    "name": "@app-monorepo/unit-tests",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+      "@app-monorepo/core": "0.0.1"
+    }
+  }

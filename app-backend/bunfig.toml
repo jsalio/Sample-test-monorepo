@@ -1,0 +1,11 @@
+[package]
+name = "app-monorepo"
+version = "0.0.1"
+
+[workspace]
+members = ["packages/*"]
+
+[test]
+coverage = true
+coverageIgnorePatterns = ["packages/db/src/mongo", "packages/db/src/sql"]
+coverageExclude = ["packages/unit-tests/**/*", "packages/db/**/**", "packages/integration-tests/**/*"]

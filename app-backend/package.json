@@ -1,0 +1,17 @@
+{
+    "name": "app-monorepo",
+    "version": "0.0.1",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "test": "bun test",
+        "test:unit": "bun test packages/unit-tests",
+        "test:integration": "bun test packages/integration-test",
+        "start": "bun run packages/api/src/index.ts"
+    },
+    "devDependencies": {
+        "bun-types": "^1.2.19"
+    }
+}
