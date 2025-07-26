@@ -1,0 +1,150 @@
+version: "3.8"
+
+# lo que estamos haciendo es un docker-compose para un proyecto monorepo con un frontend y varios microservicios
+# el frontend es una aplicación Angular y los microservicios son aplicaciones Node.js
+# el backend utiliza RabbitMQ como sistema de mensajería y MongoDB como base de datos
+# el frontend se comunica con el backend a través de una API REST
+# los microservicios se comunican entre sí a través de RabbitMQ
+# el proyecto está estructurado de la siguiente manera:
+# - app-frontend: contiene el código del frontend (Angular)
+# - app-backend: contiene el código del backend (Node.js) y los microservices (API, Auth Service, User Service)
+# - Dockerfile: contiene la configuración para construir las imágenes de Docker para el frontend y los microservicios
+# - docker-compose.yml: contiene la configuración para orquestar los contenedores de Docker
+# - .env: contiene las variables de entorno para la configuración del proyecto (credenciales, URLs, etc.)
+services:
+  # Creamos la configuración para RabbitMQ
+  rabbitmq:
+    container_name: sample-mono-rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - sample-mono-network
+    # Esto es importante para que RabbitMQ esté listo antes de que los servicios dependientes intenten conectarse
+    # la configuración de healthcheck asegura que el contenedor de RabbitMQ esté completamente operativo antes de que los servicios dependientes se inicien
+    # healthcheck verifica la conectividad al puerto de RabbitMQ
+    # si RabbitMQ no está listo, los servicios que dependen de él no se iniciarán
+    # esto ayuda a evitar errores de conexión y garantiza que los servicios tengan acceso a RabbitMQ cuando lo necesiten
+    # el healthcheck se ejecuta cada 10 segundos, con un tiempo de espera de 5 segundos y un máximo de 10 reintentos
+    # el período de inicio es de 30 segundos, lo que significa que RabbitMQ tendrá tiempo para arrancar antes de que se realicen las primeras comprobaciones de salud
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+  # Configuración para el API del backend
+  api:
+    container_name: sample-mono-api
+    build:
+      context: ./app-backend
+      dockerfile: packages/api/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET:-my-super-secret-key-1234567890}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://guest:guest@sample-mono-rabbitmq:5672}
+    networks:
+      - sample-mono-network
+    volumes:
+      - ./app-backend:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  # Configuración para los microservicios
+  # Auth Service maneja la autenticación y autorización de usuarios
+  # User Service maneja la información de los usuarios
+  # Ambos servicios se comunican con RabbitMQ para enviar y recibir mensajes
+  # y utilizan MongoDB para almacenar datos persistentes
+  # Estos servicios se construyen a partir de los Dockerfiles específicos ubicados en sus respectivos
+  # directorios dentro de la estructura del monorepo
+  # Cada servicio tiene su propio contenedor, lo que permite escalabilidad y mantenimiento independiente
+  # Además, cada servicio expone un puerto específico para que el frontend pueda interactuar con ellos
+  # y se asegura de que estén conectados a la misma red de Docker para facilitar la comunicación entre ellos
+  auth-service:
+    container_name: sample-mono-auth
+    build:
+      context: ./app-backend
+      dockerfile: packages/auth-service/Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGODB_URI=${MONGODB_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://guest:guest@sample-mono-rabbitmq:5672}
+      - JWT_SECRET=${JWT_SECRET:-my-super-secret-key-1234567890}
+    networks:
+      - sample-mono-network
+    volumes:
+      - ./app-backend:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  user-service:
+    container_name: sample-mono-user
+    build:
+      context: ./app-backend
+      dockerfile: packages/user-service/Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGODB_URI=${MONGODB_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://guest:guest@sample-mono-rabbitmq:5672}
+      - JWT_SECRET=${JWT_SECRET:-my-super-secret-key-1234567890}
+    networks:
+      - sample-mono-network
+    volumes:
+      - ./app-backend:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  # Configuración para el frontend de la aplicación
+  # El frontend es una aplicación Angular que se comunica con el backend a través de la API
+  # El frontend se construye a partir del Dockerfile ubicado en el directorio app-frontend
+  # El contenedor del frontend expone el puerto 4200 para que pueda ser accedido desde el navegador
+  # Además, se asegura de que el frontend esté conectado a la misma red de Docker que los servicios del backend
+  # Esto permite que el frontend pueda realizar solicitudes a la API del backend y a los microservicios
+  # El contenedor del frontend también monta el directorio app-frontend para que los cambios en el código fuente se reflejen en tiempo real
+  # y se puede desarrollar de manera más eficiente
+  # El frontend depende del contenedor api, lo que significa que se iniciará después de que el contenedor api esté listo
+  # Esto ayuda a evitar errores de conexión al iniciar el contenedor del frontend
+  # y garantiza que el frontend tenga acceso a la API del backend cuando se inicie
+  frontend:
+    container_name: sample-mono-frontend
+    build:
+      context: ./app-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    networks:
+      - sample-mono-network
+    volumes:
+      - ./app-frontend:/app
+    depends_on:
+      - api
+#Configuración de la red de Docker
+# Creamos una red de Docker llamada sample-mono-network para que los contenedores puedan comunicarse entre sí
+# Esta red es de tipo bridge, lo que permite que los contenedores se comuniquen entre sí utilizando sus nombres de servicio
+# Esto es útil para que los servicios del backend (API, Auth Service, User Service) puedan comunicarse con RabbitMQ y entre ellos
+# y para que el frontend pueda comunicarse con la API del backend y los microservicios
+# Al utilizar una red de Docker, los contenedores pueden resolver los nombres de servicio a direcciones IP internas
+# lo que facilita la comunicación entre ellos sin necesidad de exponer puertos
+# Además, al utilizar una red de Docker, los contenedores pueden comunicarse entre sí
+# sin necesidad de exponer puertos al host, lo que mejora la seguridad y el aislamiento
+# La red de Docker se define al final del archivo docker-compose.yml
+# y se utiliza en la sección networks de cada servicio para conectarlos a la red
+# Esto permite que los contenedores se comuniquen entre sí utilizando sus nombres de servicio
+# y facilita la configuración de la red para los servicios del backend y el frontend
+networks:
+  sample-mono-network:
+    driver: bridge

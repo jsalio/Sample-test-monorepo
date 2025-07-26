@@ -1,0 +1,18 @@
+{
+    "name": "@app-monorepo/auth-service",
+    "version": "0.0.1",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "scripts": {
+        "start": "bun run src/index.ts"
+    },
+    "dependencies": {
+        "@app-monorepo/core": "0.0.1",
+        "@app-monorepo/db": "0.0.1",
+        "@types/amqplib": "^0.10.7",
+        "amqplib": "^0.10.8",
+        "dotenv": "^17.2.0",
+        "jose": "^6.0.12",
+        "uuid": "^11.1.0"
+    }
+}
