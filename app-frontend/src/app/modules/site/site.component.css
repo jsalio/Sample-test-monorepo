@@ -1,0 +1,179 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+  }
+
+  .welcome-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .welcome-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 3rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3498db;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .username {
+    font-weight: 600;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    background: #3498db;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  .welcome-content {
+    flex: 1;
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 3rem;
+  }
+
+  .stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 3rem 0;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #3498db;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  .quick-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .action-btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .primary {
+    background: #3498db;
+    color: white;
+  }
+
+  .primary:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  .secondary {
+    background: white;
+    color: #3498db;
+    border: 2px solid #3498db;
+  }
+
+  .secondary:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+  }
+
+  .welcome-footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  .help-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .help-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .stats-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-card {
+      width: 80%;
+      margin-bottom: 1rem;
+    }
+    
+    .quick-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .action-btn {
+      width: 80%;
+    }
+  }

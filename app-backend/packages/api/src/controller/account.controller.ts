@@ -21,7 +21,7 @@ export const AccountController = (headers: Headers) => {
   const router: Map<string, (req: Request, params?: Record<string, string>) => Promise<Response>> = new Map();
   const isTestEnv = process.env.NODE_ENV === "test";
 
-  const repo: IUserAccountRepository = isTestEnv ? new InMemoryAccountRepo() : new NoSqlAccountRepo();
+  const repo: IUserAccountRepository = new InMemoryAccountRepo() //isTestEnv ? new InMemoryAccountRepo() : new NoSqlAccountRepo();
   if (!isTestEnv) {
     (repo as NoSqlAccountRepo);
   }

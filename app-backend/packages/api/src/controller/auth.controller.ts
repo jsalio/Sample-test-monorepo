@@ -1,5 +1,5 @@
 import { IGenericRequest, IPasswordHasher, IUserAccountRepository, LoginUsers, UserLogin, UserWithoutPwd } from "@app-monorepo/core";
-import { InMemoryAccountRepo, NoSqlAccountRepo } from "@app-monorepo/db";
+import { InMemoryAccountRepo, SqlLiteAccountRepo } from "@app-monorepo/db";
 import { GenerateToken } from "../utils/middleware";
 
 
@@ -21,7 +21,7 @@ const mockRequest: IGenericRequest<UserLogin> = {
 export const AuthController = (headers: Headers) => {
   const router: Map<string, (req: Request) => Promise<Response>> = new Map();
   const isTestEnv = process.env.NODE_ENV === "test";
-  const repo: IUserAccountRepository = isTestEnv ? new InMemoryAccountRepo() : new NoSqlAccountRepo();
+  const repo: IUserAccountRepository = new InMemoryAccountRepo() //isTestEnv ? new InMemoryAccountRepo() : new SqlLiteAccountRepo();
   if (!isTestEnv) {
     (repo as IUserAccountRepository);
   }
