@@ -1,35 +1,54 @@
-# Backend Application - Hexagonal Architecture
+# Backend Application - From Monolith to Microservices with Hexagonal Architecture
 
-This backend application is built using Hexagonal Architecture (also known as Ports and Adapters pattern), which provides a clean separation of concerns and makes the application highly maintainable and testable.
+This backend application demonstrates the power of Hexagonal Architecture during a transition from monolithic to microservices architecture. The project showcases how the core business logic remains unchanged while the delivery and infrastructure mechanisms evolve.
 
-## Architecture Overview
+## Architecture Evolution
 
-The application follows a modular structure with clear boundaries between different layers:
-
+### Previous Monolithic Structure:
 ```
 app-backend/
 ├── packages/
-    ├── api/          # API Layer (Controllers, Routes)
+    ├── api/          # Monolithic API Layer
     ├── core/         # Domain & Application Layer
-    └── db/          # Infrastructure Layer (Repositories)
+    └── db/          # Infrastructure Layer
 ```
 
-### Core Concepts
+### Current Microservices Structure:
+```
+app-backend/
+├── packages/
+    ├── api/          # API Gateway
+    ├── auth-service/ # Authentication Service
+    ├── user-service/ # User Management Service
+    ├── core/         # Domain & Application Layer (Unchanged)
+    └── db/          # Infrastructure Layer
+```
+
+## The Power of Hexagonal Architecture in the Transition
+
+The key benefit of our hexagonal architecture is demonstrated in this transition: the core business logic remains completely unaware of the architectural change from monolith to microservices.
+
+### Core Architecture Principles
 
 1. **Domain Layer** (`packages/core/src/domains`)
    - Contains the business logic and domain entities
-   - Defines interfaces (ports) for external dependencies
-   - Independent of external implementations
+   - Defines interfaces (ports) that remain stable during the transition
+   - Completely unaware of whether it's used in a monolith or microservices
 
 2. **Application Layer** (`packages/core/src/application`)
-   - Contains use cases (application services)
-   - Orchestrates the flow of data and implements business rules
-   - Examples: CreateUser, GetUser, LoginUser, etc.
+   - Contains use cases that remain identical in both architectures
+   - Same business rules work regardless of the delivery mechanism
+   - Examples: CreateUser, GetUser, LoginUser work the same way
 
-3. **Infrastructure Layer** (`packages/db`)
-   - Contains concrete implementations of the interfaces defined in the domain layer
-   - Implements repository interfaces for different storage solutions
-   - Easy to swap implementations without affecting business logic
+3. **Service Layer** (New in Microservices)
+   - Each service (`auth-service`, `user-service`) implements its specific concerns
+   - Services communicate through message queues (RabbitMQ)
+   - Core business logic is reused across services
+
+4. **Infrastructure Layer** (`packages/db`)
+   - Adapters now implement repository interfaces for each service
+   - Database connections are service-specific
+   - Demonstrates the flexibility of the ports and adapters pattern
 
 ## Adapter Pattern Implementation
 
@@ -71,29 +90,50 @@ The architecture supports different types of testing:
 - Integration tests with real database implementations
 - Easy mocking of dependencies
 
-## Project Structure
+## Current Project Structure
 
-- `api/`: REST API endpoints and controllers
-- `core/`: Business logic, use cases, and domain entities
-- `db/`: Repository implementations for different storage solutions
+- `api/`: API Gateway for routing requests to appropriate services
+- `auth-service/`: Authentication and authorization service
+- `user-service/`: User management service
+- `core/`: Business logic and use cases (unchanged from monolith)
+- `db/`: Repository implementations for services
 - `integration-test/`: Integration tests
 - `unit-tests/`: Unit tests for use cases
 
+## Service Communication
+
+The transition to microservices introduced:
+- RabbitMQ for inter-service communication
+- Message queues for asynchronous operations
+- Service-specific databases
+- API Gateway pattern for client requests
+
 ## Getting Started
 
-1. Install dependencies:
+1. Install dependencies for all services:
    ```bash
    bun install
    ```
 
-2. Run tests:
+2. Start required infrastructure:
    ```bash
-   bun test
+   # Start RabbitMQ
+   docker-compose up -d rabbitmq
+   
+   # Start MongoDB
+   docker-compose up -d mongodb
    ```
 
-3. Start the application:
+3. Start services (in separate terminals):
    ```bash
-   bun start
+   # Start API Gateway
+   cd packages/api && bun start
+   
+   # Start Auth Service
+   cd packages/auth-service && bun start
+   
+   # Start User Service
+   cd packages/user-service && bun start
    ```
 
 Note: The application uses Bun as the runtime environment and package manager.
