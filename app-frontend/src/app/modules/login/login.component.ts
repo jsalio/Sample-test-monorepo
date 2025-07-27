@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { LocalStoreService } from '../../services/local-store.service';
 
 @Component({
   selector: 'app-login',
@@ -11,12 +12,12 @@ import { Router } from '@angular/router';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
-  providers: [AuthService]
+  providers: [AuthService,LocalStoreService]
 })
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private readonly authService: AuthService, private readonly router: Router) {
+  constructor(private fb: FormBuilder, private readonly authService: AuthService, private readonly router: Router, private readonly localStoreService: LocalStoreService) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(1)]],
       password: ['', [Validators.required]]
@@ -27,7 +28,7 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       console.log('Login Form Submitted', this.loginForm.value);
       this.authService.login(this.loginForm.value).subscribe((res: any) => {
-        console.log(res);
+        this.localStoreService.setItem('userData', res);
         this.router.navigate(['/site']);
       });
     }

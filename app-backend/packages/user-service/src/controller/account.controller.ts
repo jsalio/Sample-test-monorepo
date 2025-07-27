@@ -53,6 +53,7 @@ export const AccountController = (headers: Headers) => {
 
   router.set("/api/account/users", async (req: Request) => {
     const userId = await VerifyToken(req);
+    console.log("User ID from token:", userId, req.headers.get("Authorization"));
     if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,

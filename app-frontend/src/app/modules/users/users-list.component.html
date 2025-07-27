@@ -1,0 +1,12 @@
+<div class="container">
+    <h2>Users List X</h2>
+    <div class="users-grid">
+        <div *ngFor="let user of users" class="user-card">
+            <h3>{{user.username}}</h3>
+            <p>Email: {{user.email}}</p>
+            <p>Created At: {{user.createdAt | date:'short'}}</p>
+            <button (click)="editUser(user.username)">Edit</button>
+            <button (click)="deleteUser(user.username)">Delete</button>
+        </div>
+    </div>
+</div>

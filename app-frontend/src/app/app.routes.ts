@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './modules/login/login.component';
 import { SiteComponent } from './modules/site/site.component';
+import { UsersListComponent } from './modules/users/users-list.component';
 
 export const routes: Routes = [
     {
@@ -13,6 +14,13 @@ export const routes: Routes = [
     },
     {
         path: 'site',
-        component: SiteComponent
-    }
+        component: SiteComponent,
+        children: [
+            {
+                path: 'users',
+                component: UsersListComponent
+            }
+        ]
+    },
+
 ];
