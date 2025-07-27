@@ -15,9 +15,9 @@ export class NoSqlAccountRepo implements IUserAccountRepository {
     private users: Collection<MongoUser>;
 
     constructor() {
-        // console.log(process.env.MONGODB_URI);
-        // console.log("Hello from NoSqlAccountRepo constructor");
-        const client = new MongoClient(process.env.MONGODB_URI || "");
+        console.log(JSON.stringify(process.env, null, 2));
+        console.log("Hello from NoSqlAccountRepo constructor");
+        const client = new MongoClient(process.env.MongodbDB || "");
 
         client.connect().then(() => {
             console.log("Connected to MongoDB");

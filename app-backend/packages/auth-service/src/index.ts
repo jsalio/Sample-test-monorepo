@@ -32,5 +32,4 @@ Bun.serve({
     });
   }
 });
-
 console.log("Auth Service running at http://localhost:" + defaultPort);

@@ -1,6 +1,12 @@
 # Usar imagen ligera de Bun
 FROM oven/bun:slim
 
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
 # Establecer directorio de trabajo
 WORKDIR /app
 

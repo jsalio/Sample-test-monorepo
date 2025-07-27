@@ -1,5 +1,5 @@
-version: "3.8"
-
+# docker-compose.yml
+# Este archivo docker-compose.yml define la configuración de los servicios para un proyecto monorepo
 # lo que estamos haciendo es un docker-compose para un proyecto monorepo con un frontend y varios microservicios
 # el frontend es una aplicación Angular y los microservicios son aplicaciones Node.js
 # el backend utiliza RabbitMQ como sistema de mensajería y MongoDB como base de datos
